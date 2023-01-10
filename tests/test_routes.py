@@ -124,3 +124,15 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     # ADD YOUR TEST CASES HERE ...
+    def test_list_accounts(self):
+         """It should return array of dictionary for list of accounts"""
+         response = self.client.get(BASE_URL)
+         response_acc_list = response.get_json()
+         if len(response_acc_list) == 0:
+            self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+         else:
+            for rsp_ac in response_acc_list:
+                self.assertEqual(type(rsp_ac), dict)
+         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+
