@@ -124,25 +124,28 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     # ADD YOUR TEST CASES HERE ...
-     def test_list_accounts(self):
-         """It should not return 404_NOT_FOUND even no record from list of accounts"""
-         response = self.client.get(BASE_URL)
-         self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-         """It should return array of dictionary for list of accounts"""
-         account = AccountFactory()
-         account.create()
-         response = self.client.get(BASE_URL)
-         response_acc_list = response.get_json()
-         for rsp_ac in response_acc_list:
-            self.assertEqual(type(rsp_ac), dict)
-         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_get_account_list(self):
+        """It should Get a list of Accounts"""
+        self._create_accounts(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+    
+    def test_get_account_list_not_found(self):
+        """It should not return 404_NOT_FOUND even no record from list of accounts"""
+        response = self.client.get(BASE_URL)
+        self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_read_account(self):
+    def test_get_account(self):
+        """It should return account if found and 200_OK"""
         account = AccountFactory()
         account.create()
+        response = self.client.get(BASE_URL+"/" + str(account.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_account_not_found(self):
         """It should return 404_NOT_FOUND if account cannot be found by the provided ID"""
         response = self.client.get(BASE_URL+"/99999")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        """It should return account found and 200_OK"""
-        response = self.client.get(BASE_URL+"/" + str(account.id))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
