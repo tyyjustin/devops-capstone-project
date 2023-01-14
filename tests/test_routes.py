@@ -124,15 +124,25 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     # ADD YOUR TEST CASES HERE ...
-    def test_list_accounts(self):
+     def test_list_accounts(self):
+         """It should not return 404_NOT_FOUND even no record from list of accounts"""
+         response = self.client.get(BASE_URL)
+         self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
          """It should return array of dictionary for list of accounts"""
+         account = AccountFactory()
+         account.create()
          response = self.client.get(BASE_URL)
          response_acc_list = response.get_json()
-         if len(response_acc_list) == 0:
-            self.assertNotEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-         else:
-            for rsp_ac in response_acc_list:
-                self.assertEqual(type(rsp_ac), dict)
+         for rsp_ac in response_acc_list:
+            self.assertEqual(type(rsp_ac), dict)
          self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
 
+    def test_read_account(self):
+        account = AccountFactory()
+        account.create()
+        """It should return 404_NOT_FOUND if account cannot be found by the provided ID"""
+        response = self.client.get(BASE_URL+"/99999")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        """It should return account found and 200_OK"""
+        response = self.client.get(BASE_URL+"/" + str(account.id))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
