@@ -57,6 +57,7 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
@@ -67,7 +68,7 @@ def get_account_list():
     """
     app.logger.info("Request to list all Accounts")
     accounts = Account.all()
-    accounts_msg=[] 
+    accounts_msg = []
     for ac in accounts:
         accounts_msg.append(ac.serialize())
     return make_response(
@@ -87,14 +88,15 @@ def get_account(account_id):
     if isinstance(account_id, int):
         account = Account.find(account_id)
     else:
-        return make_response('Please input number only for ID',status.HTTP_400_BAD_REQUEST)
-    if account == None:
-        return make_response('Record not found',status.HTTP_404_NOT_FOUND)
-    else: 
+        return make_response('Please input number only for ID', status.HTTP_400_BAD_REQUEST)
+    if account is None:
+        return make_response('Record not found', status.HTTP_404_NOT_FOUND)
+    else:
         return make_response(
-        jsonify(account.serialize()), status.HTTP_200_OK
-    )
-    
+            jsonify(account.serialize()), status.HTTP_200_OK
+            )
+
+
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
